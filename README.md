@@ -99,16 +99,7 @@ Pipeline fails only for high-risk vulnerabilities, following real industry pract
 
 ## Repository Structure
 
-.
-├── Jenkinsfile
-├── Dockerfile
-├── zap-rules.conf
-├── Kubernetes/
-│   ├── deployment.yml
-│   └── service.yml
-├── src/
-├── public/
-└── README.md
+. ├── Jenkinsfile ├── Dockerfile ├── zap-rules.conf ├── Kubernetes/ │ ├── deployment.yml │ └── service.yml ├── src/ ├── public/ └── README.md
 
 ## OWASP ZAP Rules (Policy-Based)
 
