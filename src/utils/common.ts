@@ -1,5 +1,22 @@
-export const getRandomNumber = (maxNumber: number) =>
-  Math.floor(Math.random() * maxNumber);
+export const getRandomNumber = (maxNumber: number) => {
+  if (maxNumber <= 0) return 0;
+
+  if (!globalThis.crypto || typeof globalThis.crypto.getRandomValues !== "function") {
+    throw new Error("Secure random generator is not available.");
+  }
+
+  const maxUint32 = 0xffffffff;
+  const limit = maxUint32 - (maxUint32 % maxNumber);
+  const buffer = new Uint32Array(1);
+
+  let value = 0;
+  do {
+    globalThis.crypto.getRandomValues(buffer);
+    value = buffer[0];
+  } while (value >= limit);
+
+  return value % maxNumber;
+};
 
 export const formatMinuteToReadable = (minutes: number) => {
   const h = Math.floor(minutes / 60);
