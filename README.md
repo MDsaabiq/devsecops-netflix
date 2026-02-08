@@ -99,6 +99,7 @@ Pipeline fails only for high-risk vulnerabilities, following real industry pract
 
 ## Repository Structure
 
+```text
 .
 ├── Jenkinsfile
 ├── Dockerfile
@@ -109,6 +110,7 @@ Pipeline fails only for high-risk vulnerabilities, following real industry pract
 ├── src/
 ├── public/
 └── README.md
+```
 
 ## OWASP ZAP Rules (Policy-Based)
 
