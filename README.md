@@ -102,6 +102,7 @@ Pipeline fails only for high-risk vulnerabilities, following real industry pract
 ```text
 .
 ├── Jenkinsfile
+├── EKS Template/
 ├── Dockerfile
 ├── zap-rules.conf
 ├── Kubernetes/
