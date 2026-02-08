@@ -1,95 +1,162 @@
-<div align="center">
-  <a href="http://netflix-clone-with-tmdb-using-react-mui.vercel.app/">
-    <img src="./public/assets/netflix-logo.png" alt="Logo" width="100" height="32">
-  </a>
+# DevSecOps Netflix Clone on AWS EKS
 
-  <h3 align="center">Netflix Clone</h3>
+A production-style DevSecOps CI/CD pipeline that builds, scans, secures, and deploys a Netflix-like web app using AWS, Jenkins, Docker, Kubernetes (EKS), SonarQube, Trivy, and OWASP ZAP, Gmail, Grafana, Prometheus. This project demonstrates real-world DevSecOps practices, not just deployment.
 
-  <p align="center">
-    <a href="https://netflix-clone-react-typescript.vercel.app/">View Demo</a>
-    ·
-    <a href="https://github.com/crazy-man22/netflix-clone-react-typescript/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/crazy-man22/netflix-clone-react-typescript/issues">Request Feature</a>
-  </p>
-</div>
+## Project Highlights
 
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#prerequests">Prerequests</a>
-    </li>
-    <li>
-      <a href="#which-features-this-project-deals-with">Which features this project deals with</a>
-    </li>
-    <li><a href="#third-party-libraries-used-except-for-react-and-rtk">Third Party libraries used except for React and RTK</a></li>
-    <li>
-      <a href="#contact">Contact</a>
-    </li>
-  </ol>
-</details>
+- End-to-end CI/CD pipeline using Jenkins
+- Security at every stage (container scan, owasp, sonarqube)
+- Dockerized application deployed to AWS EKS
+- Automated vulnerability scanning with policy-based gates
+- grafana monitoring with prometheus
+- terraform for infrastructure provisioning
+- gmail notification for pipeline status
 
-<br />
+## Architecture Overview
 
-<div align="center">
-  <img src="./public/assets/home-page.png" alt="Logo" width="100%" height="100%">
-  <p align="center">Home Page</p>
-  <img src="./public/assets/mini-portal.png" alt="Logo" width="100%" height="100%">
-  <p align="center">Mini Portal</p>
-  <img src="./public/assets/detail-modal.png" alt="Logo" width="100%" height="100%">
-  <p align="center">Detail Modal</p>
-  <img src="./public/assets/grid-genre.png" alt="Logo" width="100%" height="100%">
-  <p align="center">Grid Genre Page</p>
-  <img src="./public/assets/watch.png" alt="Logo" width="100%" height="100%">
-  <p align="center">Watch Page with customer contol bar</p>
-</div>
+![Pipeline 1](public/assets/pipeline1.png)
 
-## Prerequests
+Developer
+  |
+  | (git push)
+  v
+GitHub Repository
+  |
+  v
+Jenkins CI/CD Pipeline
+  |
+  |-- SonarQube (SAST)
+  |-- Trivy FS Scan (Dependencies)
+  |-- Docker Build and Push
+  |-- Trivy Image Scan
+  |
+  v
+AWS EKS (Kubernetes)
+  |
+  |-- Application exposed via LoadBalancer
+  |
+  v
+OWASP ZAP (DAST on Live App)
 
-- Create an account if you don't have on [TMDB](https://www.themoviedb.org/).
-  Because I use its free API to consume movie/tv data.
-- And then follow the [documentation](https://developers.themoviedb.org/3/getting-started/introduction) to create API Key
-- Finally, if you use v3 of TMDB API, create a file named `.env`, and copy and paste the content of `.env.example`.
-  And then paste the API Key you just created.
+## Demo Video
 
-## Which features this project deal with
+[![Demo Video](public/assets/pipeline2.jpg)](https://drive.google.com/file/d/1sRE-pnV--9kmhuaX9gs-qmrbhdcD-Xl8/view?usp=sharing)
 
-- How to create and use [Custom Hooks](https://reactjs.org/docs/hooks-custom.html)
-- How to use [Context](https://reactjs.org/docs/context.html) and its provider
-- How to use lazy and Suspense for [Code-Splitting](https://reactjs.org/docs/code-splitting.html)
-- How to use a new [lazy](https://reactrouter.com/en/main/route/lazy) feature of react-router to reduce bundle size.
-- How to use data [loader](https://reactrouter.com/en/main/route/loader) of react-router, and how to use redux dispatch in the loader to fetch data before rendering component.
-- How to use [Portal](https://reactjs.org/docs/portals.html)
-- How to use [Fowarding Refs](https://reactjs.org/docs/forwarding-refs.html) to make components reusuable
-- How to create and use [HOC](https://reactjs.org/docs/higher-order-components.html)
-- How to customize default theme of [MUI](https://mui.com/)
-- How to use [RTK](https://redux-toolkit.js.org/introduction/getting-started)
-- How to use [RTK Query](https://redux-toolkit.js.org/rtk-query/overview)
-- How to customize default classname of [MUI](https://mui.com/material-ui/experimental-api/classname-generator)
-- Infinite Scrolling(using [Intersection Observer API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API))
-- How to make awesome carousel using [slick-carousel](https://react-slick.neostack.com)
+## Tech Stack
 
-## Third Party libraries used except for React and RTK
+Cloud and Infrastructure
 
-- [react-router-dom@v6.9](https://reactrouter.com/en/main)
-- [MUI(Material UI)](https://mui.com/)
-- [framer-motion](https://www.framer.com/docs/)
-- [video.js](https://videojs.com)
-- [react-slick](https://react-slick.neostack.com/)
+- AWS EC2: Jenkins controller
+- AWS EKS: Kubernetes cluster
+- AWS ECR or Docker Hub: image registry
 
-## Install with Docker
+CI/CD and DevOps
 
-```sh
-docker build --build-arg TMDB_V3_API_KEY=your_api_key_here -t netflix-clone .
+- Jenkins: pipeline orchestration
+- Docker: containerization
+- Kubernetes: application orchestration
 
-docker run --name netflix-clone-website --rm -d -p 80:80 netflix-clone
+Security (DevSecOps)
+
+- SonarQube: Static Application Security Testing (SAST)
+- Trivy: dependency and container vulnerability scanning
+- OWASP ZAP: Dynamic Application Security Testing (DAST)
+
+Application
+
+- React + Node.js
+- Netflix-style frontend consuming TMDB API
+
+## Security Integration (DevSecOps)
+
+This pipeline enforces security at multiple layers:
+
+| Stage | Tool | Purpose |
+| --- | --- | --- |
+| Code Analysis | SonarQube | Detect code smells and vulnerabilities |
+| Dependency Scan | Trivy FS | Scan npm dependencies |
+| Image Scan | Trivy Image | Scan OS and libraries |
+| Runtime Scan | OWASP ZAP | Scan live app on Kubernetes |
+
+Pipeline fails only for high-risk vulnerabilities, following real industry practices.
+
+## Jenkins Pipeline Stages
+
+1. Clean workspace
+2. Checkout source code
+3. SonarQube analysis (SAST)
+4. Quality gate validation
+5. Install dependencies
+6. Trivy file system scan
+7. Docker build and push
+8. Trivy image scan
+9. Deploy to Docker (EC2)
+10. Deploy to Kubernetes (EKS)
+11. OWASP ZAP scan on Kubernetes service
+12. Email notification with reports
+
+## Repository Structure
+
+.
+├── Jenkinsfile
+├── Dockerfile
+├── zap-rules.conf
+├── Kubernetes/
+│   ├── deployment.yml
+│   └── service.yml
+├── src/
+├── public/
+└── README.md
+
+## OWASP ZAP Rules (Policy-Based)
+
+Custom ZAP rules ensure:
+
+- FAIL on high-risk vulnerabilities
+- WARNINGS are reported but do not block delivery
+
+Example:
+
+```
+40012  FAIL   SQL Injection
+10020  IGNORE Missing Anti-clickjacking Header
 ```
 
-## Todo
+## Automated Notifications
 
-- Make the animation of video card portal more similar to Netflix.
-- Improve performance. I am using `context` and `provider` but all components subscribed to the context's value are re-rendered. These re-renders happen even if the part of the value is not used in render of the component. there are [several ways](https://blog.axlight.com/posts/4-options-to-prevent-extra-rerenders-with-react-context/) to prevent the re-renders from these behaviours. In addition to them, there may be several performance issues.
-- Replace bundler([Vite](https://vitejs.dev/guide)) with [Turbopack](https://turbo.build/pack/docs/why-turbopack). Turbopack is introduced in Next.js conf recently. It's very fast but it's nor ready to use right now. it just support Next.js, and they plan to support all others as soon as possible. so if it's ready to use, replace [Vite](https://vitejs.dev/guide) with [Turbopack](https://turbo.build/pack/docs/why-turbopack).
-- Add accessibilities for better UX.
-- Add Tests.
+After every pipeline run:
+
+- Build status email is sent
+- Attached reports:
+  - trivyfs.txt
+  - trivyimage.txt
+  - zap_k8s_report.html
+
+## Deployment
+
+- Application is deployed to AWS EKS
+- Exposed via Kubernetes LoadBalancer
+- OWASP ZAP scans the live, publicly reachable service
+
+## Key Takeaways
+
+- End-to-end DevSecOps flow with security gates
+- Policy-driven vulnerability management
+- Kubernetes + AWS EKS deployment with live DAST
+- OWASP Top 10 awareness and tooling alignment
+- Production-style Jenkins pipeline with audit-friendly reports
+
+## Future Improvements
+
+- Authenticated OWASP ZAP scans
+- Security dashboards (Grafana)
+- Canary or blue-green deployments
+- Automated rollback on security failure
+- HTTPS via Ingress + TLS
+
+## Author
+
+Saabiq
+DevSecOps | AWS | Kubernetes | Jenkins | Security
+
+Reach out via GitHub or LinkedIn.
