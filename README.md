@@ -40,9 +40,11 @@ OWASP ZAP (DAST on Live App)
 
 ## Demo Video
 
-<a href="https://drive.google.com/file/d/1sRE-pnV--9kmhuaX9gs-qmrbhdcD-Xl8/view?usp=sharing" target="_blank" rel="noopener">
-  <img src="public/assets/pipeline2.jpg" alt="Demo Video" />
-</a>
+<video controls width="100%" poster="public/assets/pipeline2.jpg">
+  <source src="public/assets/CICD-Netflix.mp4" type="video/mp4" />
+  Your browser does not support the video tag. You can download the video
+  <a href="public/assets/CICD-Netflix.mp4">here</a>.
+</video>
 
 ## Tech Stack
 
@@ -96,6 +98,145 @@ Pipeline fails only for high-risk vulnerabilities, following real industry pract
 10. Deploy to Kubernetes (EKS)
 11. OWASP ZAP scan on Kubernetes service
 12. Email notification with reports
+
+## Jenkinsfile (Declarative Pipeline)
+
+```groovy
+pipeline {
+  agent any
+
+  tools {
+    jdk 'jdk23'
+    nodejs 'nodejs'
+  }
+
+  environment {
+    SCANNER_HOME = tool 'sonar-scanner'
+    TMDB_API_KEY = "********"
+  }
+
+  stages {
+
+    stage('Clean Workspace') {
+      steps {
+        cleanWs()
+      }
+    }
+
+    stage('Checkout from Git') {
+      steps {
+        git branch: 'main',
+          url: 'https://github.com/MDsaabiq/devsecops-netflix.git'
+      }
+    }
+
+    stage('SonarQube Analysis') {
+      steps {
+        withSonarQubeEnv('sonar-server') {
+          sh """
+          ${SCANNER_HOME}/bin/sonar-scanner \
+            -Dsonar.projectName=netflix \
+            -Dsonar.projectKey=netflix
+          """
+        }
+      }
+    }
+
+    stage('Quality Gate') {
+      steps {
+        script {
+          waitForQualityGate abortPipeline: false,
+            credentialsId: 'sonar-token'
+        }
+      }
+    }
+
+    stage('Install Dependencies') {
+      steps {
+        sh 'npm install'
+      }
+    }
+
+    stage('TRIVY FS SCAN') {
+      steps {
+        sh 'trivy fs . > trivyfs.txt'
+      }
+    }
+
+    stage('Docker Build & Push') {
+      steps {
+        script {
+          withDockerRegistry(credentialsId: 'docker') {
+            sh "docker build --build-arg TMDB_V3_API_KEY=${TMDB_API_KEY} -t netflix ."
+            sh "docker tag netflix sksaabiq123/netflix:latest"
+            sh "docker push sksaabiq123/netflix:latest"
+          }
+        }
+      }
+    }
+
+    stage('TRIVY Image Scan') {
+      steps {
+        sh 'trivy image sksaabiq123/netflix:latest > trivyimage.txt'
+      }
+    }
+
+    stage('Deploy to Container') {
+      steps {
+        sh 'docker rm -f netflix || true'
+        sh 'docker run -d --name netflix -p 8081:80 sksaabiq123/netflix:latest'
+      }
+    }
+
+    stage('Deploy to Kubernetes') {
+      steps {
+        script {
+          dir('Kubernetes') {
+            withKubeConfig(credentialsId: 'k8s') {
+              sh 'kubectl apply -f deployment.yml'
+              sh 'kubectl apply -f service.yml'
+            }
+          }
+        }
+      }
+    }
+
+    stage('OWASP ZAP Scan (Kubernetes)') {
+      steps {
+        script {
+          // allow container to write report
+          sh 'chmod -R 777 .'
+
+          sh '''
+          docker run --rm \
+            -u 0 \
+            -v $(pwd):/zap/wrk \
+            ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
+            -t http://aeb1610325e684b8db05e9ded130ac34-7558949.ap-south-1.elb.amazonaws.com \
+            -r zap_k8s_report.html \
+            -c zap-rules.conf \
+            -I
+          '''
+        }
+      }
+    }
+  }
+
+  post {
+    always {
+      emailext(
+        attachLog: true,
+        subject: "'${currentBuild.result}': ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
+        body: """Project: ${env.JOB_NAME}<br/>
+Build Number: ${env.BUILD_NUMBER}<br/>
+URL: ${env.BUILD_URL}<br/>""",
+        to: 'saabiqcs@gmail.com',
+        attachmentsPattern: 'trivyfs.txt, trivyimage.txt, zap_k8s_report.html'
+      )
+    }
+  }
+}
+```
 
 ## Repository Structure
 
