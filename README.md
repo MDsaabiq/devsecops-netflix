@@ -40,9 +40,7 @@ OWASP ZAP (DAST on Live App)
 
 ## Demo Video
 
-<a href="https://github.com/user-attachments/assets/1ae5d562-53e4-4051-946c-e1b98a370791" target="_blank" rel="noopener">
-  <img src="public/assets/pipeline2.jpg" alt="Demo Video" />
-</a>
+[![Demo Video](public/assets/pipeline2.jpg)](https://github.com/user-attachments/assets/1ae5d562-53e4-4051-946c-e1b98a370791)
 
 ## Tech Stack
 
