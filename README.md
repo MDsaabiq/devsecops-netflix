@@ -40,11 +40,9 @@ OWASP ZAP (DAST on Live App)
 
 ## Demo Video
 
-<video controls width="100%" poster="public/assets/pipeline2.jpg">
-  <source src="public/assets/CICD-Netflix.mp4" type="video/mp4" />
-  Your browser does not support the video tag. You can download the video
-  <a href="public/assets/CICD-Netflix.mp4">here</a>.
-</video>
+<a href="https://github.com/user-attachments/assets/1ae5d562-53e4-4051-946c-e1b98a370791" target="_blank" rel="noopener">
+  <img src="public/assets/pipeline2.jpg" alt="Demo Video" />
+</a>
 
 ## Tech Stack
 
