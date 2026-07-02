@@ -234,6 +234,70 @@ URL: ${env.BUILD_URL}<br/>""",
 }
 ```
 
+## EKS Infrastructure Pipeline (Terraform)
+
+A separate parameterized Jenkins pipeline provisions and destroys the EKS cluster using Terraform.
+
+**Pipeline Parameter:**
+
+| Name | Choices | Purpose |
+| --- | --- | --- |
+| `action` | `apply` / `destroy` | Create or tear down the EKS cluster |
+
+```groovy
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout from Git') {
+            steps {
+                git branch: 'main', url: 'https://github.com/MDsaabiq/devsecops-netflix.git'
+            }
+        }
+
+        stage('Terraform version') {
+            steps {
+                sh 'terraform --version'
+            }
+        }
+
+        stage('Terraform init') {
+            steps {
+                dir('EKS_TERRAFORM') {
+                    sh 'terraform init'
+                }
+            }
+        }
+
+        stage('Terraform validate') {
+            steps {
+                dir('EKS_TERRAFORM') {
+                    sh 'terraform validate'
+                }
+            }
+        }
+
+        stage('Terraform plan') {
+            steps {
+                dir('EKS_TERRAFORM') {
+                    sh 'terraform plan'
+                }
+            }
+        }
+
+        stage('Terraform apply/destroy') {
+            steps {
+                dir('EKS_TERRAFORM') {
+                    sh "terraform ${params.action} --auto-approve"
+                }
+            }
+        }
+    }
+}
+```
+
+> Terraform state is stored remotely in S3 (`devsecops-netflix-saabiq`) so the cluster state is preserved across pipeline runs.
+
 ## Repository Structure
 
 ```text
